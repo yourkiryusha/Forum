@@ -1,0 +1,301 @@
+@charset "UTF-8";
+/**
+  Нормализация блочной модели
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/**
+  Убираем внутренние отступы слева тегам списков,
+  у которых есть атрибут class
+ */
+:where(ul, ol):where([class]) {
+  padding-left: 0;
+}
+
+/**
+  Убираем внешние отступы body и двум другим тегам,
+  у которых есть атрибут class
+ */
+body,
+:where(blockquote, figure):where([class]) {
+  margin: 0;
+}
+
+/**
+  Убираем внешние отступы вертикали нужным тегам,
+  у которых есть атрибут class
+ */
+:where(h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+dl):where([class]) {
+  margin-block: 0;
+}
+
+:where(dd[class]) {
+  margin-left: 0;
+}
+
+:where(fieldset[class]) {
+  margin-left: 0;
+  padding: 0;
+  border: none;
+}
+
+/**
+  Убираем стандартный маркер маркированному списку,
+  у которого есть атрибут class
+ */
+:where(ul[class]) {
+  list-style: none;
+}
+
+/**
+  Обнуляем вертикальные внешние отступы параграфа,
+  объявляем локальную переменную для внешнего отступа вниз,
+  чтобы избежать взаимодействие с более сложным селектором
+ */
+p {
+  --paragraphMarginBottom: 24px;
+  margin-block: 0;
+}
+
+/**
+  Внешний отступ вниз для параграфа без атрибута class,
+  который расположен не последним среди своих соседних элементов
+ */
+p:where(:not([class]):not(:last-child)) {
+  margin-bottom: var(--paragraphMarginBottom);
+}
+
+/**
+  Упрощаем работу с изображениями
+ */
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/**
+  Наследуем свойства шрифт для полей ввода
+ */
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+html {
+  /**
+    Пригодится в большинстве ситуаций
+    (когда, например, нужно будет "прижать" футер к низу сайта)
+   */
+  height: 100%;
+  /**
+    Плавный скролл
+   */
+  scroll-behavior: smooth;
+}
+
+body {
+  /**
+    Пригодится в большинстве ситуаций
+    (когда, например, нужно будет "прижать" футер к низу сайта)
+   */
+  min-height: 100%;
+  /**
+    Унифицированный интерлиньяж
+   */
+  line-height: 1.5;
+}
+
+/**
+  Приводим к единому цвету svg-элементы
+ */
+svg *[fill] {
+  fill: currentColor;
+}
+
+svg *[stroke] {
+  stroke: currentColor;
+}
+
+/**
+  Чиним баг задержки смены цвета при взаимодействии с svg-элементами
+ */
+svg * {
+  transition-property: fill, stroke;
+}
+
+/**
+  Удаляем все анимации и переходы для людей,
+  которые предпочитают их не использовать
+ */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+@font-face {
+  font-family: "Ubuntu";
+  src: url("../fonts/Ubuntu-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  --color-gray: lightgray;
+  --color-white: #FFF;
+  --border: 1px solid var(--color-gray);
+  --border-radius-small: 15px;
+  --border-radius-medium: 30px;
+}
+
+body {
+  font-family: "Ubuntu", sans-serif;
+}
+
+input, button {
+  height: 50px;
+  border: var(--border);
+  border-radius: var(--border-radius-small);
+  transition-duration: 0.3s;
+}
+
+input {
+  box-sizing: border-box;
+  padding: 10px;
+}
+input:focus {
+  outline: none;
+  background-color: var(--color-gray);
+}
+input:hover {
+  background-color: var(--color-gray);
+}
+
+button {
+  width: 50px;
+  background-color: var(--color-gray);
+  cursor: pointer;
+}
+button:hover {
+  background-color: gray;
+}
+
+.forum,
+.form-topic,
+.form-topic-body,
+.topic,
+.topics,
+.topic-header {
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
+}
+
+.forum {
+  width: 50%;
+  height: auto;
+  margin-top: 20px;
+  margin-inline: auto;
+  padding: 15px;
+  border: var(--border);
+  border-radius: var(--border-radius-medium);
+}
+
+.form-topic {
+  justify-content: center;
+  border: var(--border);
+  border-radius: var(--border-radius-small);
+  padding: 15px;
+}
+
+.your-name,
+.form-topic-title,
+.form-topic-summary,
+.topic-author,
+.topic-commentary {
+  display: grid;
+  grid-template-columns: minmax(100px, 20%) auto;
+  align-items: center;
+  overflow: hidden;
+}
+
+.topic-name {
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
+}
+
+.topic-body {
+  display: grid;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+.topic-input {
+  flex: 1;
+}
+
+.commentary {
+  display: flex;
+  column-gap: 30px;
+  font-style: italic;
+}
+.commentary-author {
+  font-weight: bold;
+}
+
+.form-button-send {
+  margin: auto;
+}
+.form-button-send::before {
+  content: "";
+  display: inline-block;
+  background: url("../icons/send.svg") center/contain no-repeat;
+  width: 20px;
+  height: 20px;
+}
+
+.topic-button-delete::before {
+  content: "";
+  display: inline-block;
+  background: url("../icons/delete.svg") center/contain no-repeat;
+  width: 20px;
+  height: 20px;
+}
+
+.topic-button-add {
+  margin: auto;
+}
+.topic-button-add::before {
+  content: "";
+  display: inline-block;
+  background: url("../icons/add.svg") center/contain no-repeat;
+  width: 20px;
+  height: 20px;
+}
+
+.valid {
+  border: 1px solid red;
+}
+.valid::placeholder {
+  color: red;
+}
+
+/*# sourceMappingURL=style.css.map */

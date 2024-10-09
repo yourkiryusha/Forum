@@ -1,0 +1,327 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Forum API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/",
+      "description": "Forum"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "Default"
+        ],
+        "summary": "Клиентская часть форума",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/topics": {
+      "get": {
+        "tags": [
+          "Topics"
+        ],
+        "summary": "Вывод списка всех постов",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResponseToTopics"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Topics"
+        ],
+        "summary": "Добавление нового поста",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Topic"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/topics/{id}": {
+      "get": {
+        "tags": [
+          "Topics"
+        ],
+        "summary": "Получение поста",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "id поста",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseToTopics"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Topics"
+        ],
+        "summary": "Удаление поста",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "id поста",
+            "schema": {
+              "type": "integer",
+              "example": 13
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/topics/{id}/comment": {
+      "post": {
+        "tags": [
+          "Topics"
+        ],
+        "summary": "Добавление нового комментария",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "id поста",
+            "schema": {
+              "type": "integer",
+              "example": 6
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Comment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/longPolling?responseTime={responseTime}": {
+      "get": {
+        "tags": [
+          "Long Polling"
+        ],
+        "summary": "Длинный запрос с задаваемым временем ответа",
+        "parameters": [
+          {
+            "name": "responseTime",
+            "in": "query",
+            "required": true,
+            "description": "Время ответа",
+            "schema": {
+              "type": "integer",
+              "example": 5000
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResponseToTopics"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not Modified"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Topic": {
+        "type": "object",
+        "required": [
+          "author",
+          "title",
+          "summary"
+        ],
+        "properties": {
+          "author": {
+            "type": "string",
+            "example": "Kirill"
+          },
+          "title": {
+            "type": "string",
+            "example": "What is the weather like outside?"
+          },
+          "summary": {
+            "type": "string",
+            "example": "It is raining outside"
+          }
+        }
+      },
+      "ResponseToTopics": {
+        "type": "object",
+        "required": [
+          "id",
+          "author",
+          "title",
+          "summary",
+          "comments"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "author": {
+            "type": "string",
+            "example": "Kirill"
+          },
+          "title": {
+            "type": "string",
+            "example": "What is the weather like outside?"
+          },
+          "summary": {
+            "type": "string",
+            "example": "It is raining outside"
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "author": {
+                  "type": "string",
+                  "example": "Kira"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Now in Moscow it is +15 degrees outside"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Comment": {
+        "type": "object",
+        "required": [
+          "author",
+          "message"
+        ],
+        "properties": {
+          "author": {
+            "type": "string",
+            "example": "Kira"
+          },
+          "message": {
+            "type": "string",
+            "example": "Now in Moscow it is +15 degrees outside"
+          }
+        }
+      }
+    }
+  }
+}

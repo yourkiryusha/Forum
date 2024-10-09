@@ -1,0 +1,11 @@
+$icons-path: "../icons/";
+
+@mixin button-icon($icon-name) {
+  &::before {
+    content: '';
+    display: inline-block;
+    background: url('#{$icons-path}#{$icon-name}.svg') center/contain no-repeat;
+    width: 20px;
+    height: 20px;
+  }
+}

@@ -1,0 +1,121 @@
+body {
+  font-family: 'Ubuntu', sans-serif;
+}
+
+input, button {
+  height: 50px;
+  border: var(--border);
+  border-radius: var(--border-radius-small);
+  transition-duration: 0.3s;
+}
+
+input {
+  box-sizing: border-box;
+  padding: 10px;
+
+  &:focus {
+    outline: none;
+    background-color: var(--color-gray);
+  }
+
+  &:hover {
+    background-color: var(--color-gray);
+  }
+}
+
+button {
+  width: 50px;
+  background-color: var(--color-gray);
+  cursor: pointer;
+
+  &:hover {
+    background-color: gray;
+  }
+}
+
+.forum,
+.form-topic,
+.form-topic-body,
+.topic,
+.topics,
+.topic-header {
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
+}
+
+.forum {
+  width: 50%;
+  height: auto;
+  margin-top: 20px;
+  margin-inline: auto;
+  padding: 15px;
+  border: var(--border);
+  border-radius: var(--border-radius-medium);
+}
+
+.form-topic {
+  justify-content: center;
+  border: var(--border);
+  border-radius: var(--border-radius-small);
+  padding: 15px;
+}
+
+.your-name,
+.form-topic-title,
+.form-topic-summary,
+.topic-author,
+.topic-commentary {
+  display: grid;
+  grid-template-columns: minmax(100px, 20%) auto;
+  align-items: center;
+  overflow: hidden;
+}
+
+.topic-name {
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
+}
+
+.topic-body {
+  display: grid;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+.topic-input {
+  flex: 1;
+}
+
+.commentary {
+  display: flex;
+  column-gap: 30px;
+  font-style: italic;
+
+  &-author {
+    font-weight: bold;
+  }
+}
+
+.form-button-send {
+  @include button-icon('send');
+  margin: auto;
+}
+
+.topic-button-delete {
+  @include button-icon('delete');
+}
+
+.topic-button-add {
+  @include button-icon('add');
+  margin: auto;
+}
+
+.valid {
+  border: 1px solid red;
+
+  &::placeholder {
+    color: red;
+  }
+}
