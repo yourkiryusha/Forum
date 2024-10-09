@@ -191,12 +191,12 @@
         }
       }
     },
-    "/longPolling?responseTime={responseTime}": {
+    "/longPolling": {
       "get": {
         "tags": [
           "Long Polling"
         ],
-        "summary": "Длинный запрос с задаваемым временем ответа",
+        "summary": "Длинный запрос с задаваемым временем ответа и текущей версией топиков",
         "parameters": [
           {
             "name": "responseTime",
@@ -205,7 +205,17 @@
             "description": "Время ответа",
             "schema": {
               "type": "integer",
-              "example": 5000
+              "example": 5
+            }
+          },
+          {
+            "name": "clientVersion",
+            "in": "query",
+            "required": true,
+            "description": "Версия топиков",
+            "schema": {
+              "type": "integer",
+              "example": 1
             }
           }
         ],

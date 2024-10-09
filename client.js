@@ -1,5 +1,7 @@
 class Client {
 	constructor(client) {
+		this.clientVersion = 0;
+		this.responseTime = 15;
 		this.#addNameClient(client);
 		this.#addNewTopic(client);
 		this.#requestLongPolling();
@@ -370,11 +372,14 @@ class Client {
 			try {
 				const currentTopics = await this.#request({
 					method: 'GET',
-					pathname: '/longPolling?responseTime=10000'
+					pathname: `/longPolling?responseTime=${this.responseTime}&clientVersion=${this.clientVersion}`
 				});
-				this.#isChangeTopics(defaultTopics, currentTopics);
-				defaultTopics = [...currentTopics];
-				await longPolling(10000);
+				if (currentTopics.currentVersion > this.clientVersion) {
+					this.#isChangeTopics(defaultTopics, currentTopics.topics);
+					defaultTopics = [...currentTopics.topics];
+					this.clientVersion = currentTopics.currentVersion;
+				}
+				await longPolling();
 			} catch (err) {
 				setTimeout(longPolling, 1000);
 			}

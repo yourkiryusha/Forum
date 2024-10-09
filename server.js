@@ -92,8 +92,8 @@ router.addRoute('GET', /^\/topics\/(\d+)$/, (req, res, topicId) => {
 	}
 });
 
-let isChangeTime = 0;
 let waitingClients = [];
+let serverVersion = 0;
 
 router.addRoute('POST', /^\/topics\/?$/, (req, res) => {
 	let body = '';
@@ -116,7 +116,7 @@ router.addRoute('POST', /^\/topics\/?$/, (req, res) => {
 				};
 				topics.push(topic);
 				saveTopics(topics);
-				isChangeTime = Date.now();
+				serverVersion++;
 				router.respond(res, 201, 'Created');
 			} else {
 				router.respond(res, 400, 'Bad request');
@@ -144,7 +144,7 @@ router.addRoute('POST', /^\/topics\/(\d+)\/comment$/, (req, res, topicId) => {
 				};
 				currTopic.comments.push(comment);
 				saveTopics(topics);
-				isChangeTime = Date.now();
+				serverVersion++;
 				router.respond(res, 201, 'Created');
 			} else {
 				router.respond(res, 400, 'Bad request');
@@ -161,7 +161,7 @@ router.addRoute('DELETE', /^\/topics\/(\d+)$/, (req, res, topicId) => {
 		if (currTopicId !== -1) {
 			topics.splice(currTopicId, 1);
 			saveTopics(topics);
-			isChangeTime = Date.now();
+			serverVersion++;
 			router.respond(res, 200, 'OK');
 		} else {
 			router.respond(res, 404, 'Not found');
@@ -172,22 +172,26 @@ router.addRoute('DELETE', /^\/topics\/(\d+)$/, (req, res, topicId) => {
 });
 
 router.addRoute('GET', /^\/longPolling\/?$/, (req, res) => {
-	const { responseTime } = url.parse(req.url, true).query;
-	const delayTime = parseInt(responseTime, 10);
+	const { responseTime, clientVersion } = url.parse(req.url, true).query;
 
-	if (!responseTime || isNaN(delayTime) || delayTime < 0) {
+	const isValid = (parameter) => {
+		const toNumber = +parameter;
+		return !isNaN(toNumber) && toNumber >= 0;
+	};
+
+	if (!isValid(responseTime) || !isValid(clientVersion)) {
 		return router.respond(res, 400, 'Bad request');
 	}
 
-	const client = { reqTime: Date.now(), res };
+	const client = { clientVersion: clientVersion, res };
 	waitingClients.push(client);
 
 	const waitUpdates = () => {
-		if (client.reqTime <= isChangeTime) {
+		if (client.clientVersion < serverVersion) {
 			clearInterval(intervalId);
 			clearTimeout(timeoutId);
 			waitingClients = waitingClients.filter(currClient => currClient !== client);
-			router.respondJSON(res, 200, topics);
+			router.respondJSON(res, 200, { currentVersion: serverVersion, topics });
 		}
 	};
 
@@ -197,7 +201,7 @@ router.addRoute('GET', /^\/longPolling\/?$/, (req, res) => {
 		clearInterval(intervalId);
 		waitingClients = waitingClients.filter(currClient => currClient !== client);
 		router.respond(res, 304, 'Not Modified');
-	}, delayTime);
+	}, responseTime * 1000);
 
 	req.on('close', () => {
 		clearInterval(intervalId);
