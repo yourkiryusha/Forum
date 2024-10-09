@@ -80,7 +80,6 @@ button {
 
 .topic-body {
   display: grid;
-  flex-direction: column;
   row-gap: 10px;
 }
 
@@ -89,8 +88,9 @@ button {
 }
 
 .commentary {
-  display: flex;
-  column-gap: 30px;
+  display: grid;
+  grid-template-columns: minmax(184px, 20%) auto;
+  align-items: center;
   font-style: italic;
 
   &-author {
