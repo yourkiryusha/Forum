@@ -73,7 +73,7 @@ const topics = loadTopics();
 
 router.addRoute('GET', /^\/topics\/?$/, (req, res) => {
 	try {
-		router.respondJSON(res, 200, topics);
+		router.respondJSON(res, 200, { currentVersion: serverVersion, topics });
 	} catch (error) {
 		router.respond(res, 500, 'Internal Server Error');
 	}
@@ -183,7 +183,7 @@ router.addRoute('GET', /^\/longPolling\/?$/, (req, res) => {
 		return router.respond(res, 400, 'Bad request');
 	}
 
-	const client = { clientVersion: clientVersion, res };
+	const client = { clientVersion, res };
 	waitingClients.push(client);
 
 	const waitUpdates = () => {

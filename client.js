@@ -352,7 +352,7 @@ class Client {
 				method: 'GET',
 				pathname: '/topics'
 			});
-			currentTopics.forEach((topic) => {
+			currentTopics.topics.forEach((topic) => {
 				this.#createNewTopic(topic);
 				if (topic.comments.length > 0) {
 					topic.comments.forEach((comment) => {
@@ -360,6 +360,7 @@ class Client {
 					});
 				}
 			});
+			this.clientVersion = currentTopics.currentVersion;
 			return currentTopics;
 		} catch (error) {
 			this.#reportError(error);
@@ -367,7 +368,7 @@ class Client {
 	}
 
 	async #requestLongPolling() {
-		let defaultTopics = await this.#requestToGetTopics();
+		const defaultTopics = await this.#requestToGetTopics();
 		const longPolling = async () => {
 			try {
 				const currentTopics = await this.#request({
@@ -375,8 +376,8 @@ class Client {
 					pathname: `/longPolling?responseTime=${this.responseTime}&clientVersion=${this.clientVersion}`
 				});
 				if (currentTopics.currentVersion > this.clientVersion) {
-					this.#isChangeTopics(defaultTopics, currentTopics.topics);
-					defaultTopics = [...currentTopics.topics];
+					this.#isChangeTopics(defaultTopics.topics, currentTopics.topics);
+					defaultTopics.topics = [...currentTopics.topics];
 					this.clientVersion = currentTopics.currentVersion;
 				}
 				await longPolling();
@@ -417,7 +418,7 @@ class Client {
 
 		defaultTopics.forEach((defaultTopic) => {
 			if (!currentMap.has(defaultTopic.id)) {
-				document.getElementById(`${defaultTopic.id}`).remove();
+				document.querySelector(`.topic[id="${defaultTopic.id}"]`).remove();
 			}
 		});
 	}
