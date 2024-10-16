@@ -80,6 +80,8 @@ const loadVersion = () => {
 
 const topics = loadTopics();
 
+let serverVersion = loadVersion();
+
 router.addRoute('GET', /^\/topics\/?$/, (req, res) => {
 	try {
 		router.respondJSON(res, 200, { currentVersion: serverVersion, topics });
@@ -100,10 +102,6 @@ router.addRoute('GET', /^\/topics\/(\d+)$/, (req, res, topicId) => {
 		router.respond(res, 500, 'Internal Server Error');
 	}
 });
-
-let waitingClients = [];
-
-let serverVersion = loadVersion();
 
 router.addRoute('POST', /^\/topics\/?$/, (req, res) => {
 	let body = '';
@@ -180,6 +178,8 @@ router.addRoute('DELETE', /^\/topics\/(\d+)$/, (req, res, topicId) => {
 		router.respond(res, 500, 'Internal Server Error');
 	}
 });
+
+let waitingClients = [];
 
 router.addRoute('GET', /^\/longPolling\/?$/, (req, res) => {
 	const { responseTime, clientVersion } = url.parse(req.url, true).query;
